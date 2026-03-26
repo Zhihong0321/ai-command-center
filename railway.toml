@@ -1,0 +1,10 @@
+[build]
+builder = "nixpacks"
+# Install backend dependencies explicitly
+buildCommand = "pip install -r backend/requirements.txt"
+
+[deploy]
+# Start the backend API service by default 
+startCommand = "cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT"
+healthcheckPath = "/"
+healthcheckTimeout = 30
