@@ -34,7 +34,7 @@ export default function ReposPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {repos.map(r => (
-            <Link key={r.id} href={`/repos/${r.name}`} className="glass p-5 hover:bg-white/5 transition-colors space-y-3 block">
+            <Link key={r.id} href={`/repos/detail?name=${r.name}`} className="glass p-5 hover:bg-white/5 transition-colors space-y-3 block">
               <div className="flex items-start justify-between">
                 <div>
                   <div className="font-semibold text-gray-100">{r.display_name || r.name}</div>

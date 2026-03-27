@@ -110,7 +110,7 @@ export default function DashboardPage() {
             <div className="glass p-6 text-center text-gray-500 text-sm">No repos registered yet. Use the admin API to register repos.</div>
           ) : (
             data.repos.map(r => (
-              <Link key={r.id} href={`/repos/${r.name}`} className="glass p-4 flex items-center justify-between hover:bg-white/5 transition-colors block">
+              <Link key={r.id} href={`/repos/detail?name=${r.name}`} className="glass p-4 flex items-center justify-between hover:bg-white/5 transition-colors block">
                 <div className="flex-1 min-w-0">
                   <div className="font-medium text-gray-100">{r.display_name || r.name}</div>
                   <div className="text-xs text-gray-500 font-mono">{r.name}</div>

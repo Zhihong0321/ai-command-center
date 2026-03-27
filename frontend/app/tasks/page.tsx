@@ -142,7 +142,7 @@ export default function TasksPage() {
                     <span className={`text-xs font-semibold ${PRIORITY_COLORS[t.priority]}`}>
                       {t.priority}
                     </span>
-                    <Link href={`/repos/${t.repo.name}`} className="text-xs text-cyan-400 hover:text-cyan-300">
+                    <Link href={`/repos/detail?name=${t.repo.name}`} className="text-xs text-cyan-400 hover:text-cyan-300">
                       {t.repo.display_name || t.repo.name}
                     </Link>
                   </div>
