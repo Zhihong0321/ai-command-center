@@ -1,4 +1,7 @@
+import os
 from fastapi import FastAPI, Depends, Security
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import APIKeyHeader
 from sqlalchemy.orm import Session
@@ -40,7 +43,7 @@ app.include_router(settings.router)
 api_key_header = APIKeyHeader(name="X-API-Key", auto_error=True)
 
 
-@app.get("/")
+@app.get("/api/health")
 def health():
     return {"status": "ok", "service": "AI Command Center", "time": datetime.utcnow().isoformat()}
 
@@ -142,3 +145,31 @@ def _verify_any_key(api_key: str, db: Session):
     if not agent:
         from fastapi import HTTPException
         raise HTTPException(401, "Invalid API key")
+
+# --- Serve Frontend SPA (Must be at the bottom) ---
+FRONTEND_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'frontend', 'out')
+
+if os.path.isdir(FRONTEND_DIR):
+    # Mount specific Next.js asset directories to bypass the catch-all
+    if os.path.isdir(os.path.join(FRONTEND_DIR, "_next")):
+        app.mount("/_next", StaticFiles(directory=os.path.join(FRONTEND_DIR, "_next")), name="next_assets")
+        
+    @app.get("/{full_path:path}")
+    def serve_frontend(full_path: str):
+        # Ignore /api routes (though they should have been caught by routers above)
+        if full_path.startswith("api/"):
+            from fastapi import HTTPException
+            raise HTTPException(status_code=404, detail="API route not found")
+            
+        path = os.path.join(FRONTEND_DIR, full_path)
+        # If the file exists directly (like favicon.ico, images), serve it
+        if os.path.isfile(path):
+            return FileResponse(path)
+        
+        # Fallback to index.html for SPA hydration
+        index_path = os.path.join(FRONTEND_DIR, "index.html")
+        if os.path.isfile(index_path):
+            return FileResponse(index_path)
+        
+        from fastapi import HTTPException
+        raise HTTPException(status_code=404, detail="Frontend build not found")
